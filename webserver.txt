@@ -1,0 +1,125 @@
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+function globalVariables(){
+  var variables = {
+    //sheet url
+    sheet_url: 'https://docs.google.com/spreadsheets/d/1k1_q2rbJBnIklAOPhq4ioqJP_qrIRZhz4bVtBlZTPAw/edit#gid=0',
+    //sheet name
+    sheet_name: "DATA"
+  };
+  return variables;
+}
+//
+//
+//
+function doGet(e){
+  var return_value;
+  for (var param in e.parameter) {
+    Logger.log('In for loop, param=' + param);
+    switch(param){
+      case 'data': 
+        Logger.log('JSON data' + e.parameter[param]);
+        return_value = saveJSONToSheet((e.parameter[param]), globalVariables().sheet_url);
+        break;
+      default:
+        result = "unsupported parameter";
+    }
+  }
+  return ContentService.createTextOutput(return_value).setMimeType(ContentService.MimeType.JSON);
+}
+//
+//
+//
+function doPost(request){
+  //
+  var postJSON = request.postData.getDataAsString();
+  Logger.log(postJSON);
+  var return_data = {"status":"success"};
+  var return_value = saveJSONToSheet(postJSON, globalVariables().sheet_url);
+  return ContentService.createTextOutput(return_data);
+}
+//
+//
+//
+function saveJSONToSheet(dataObject,sheet_url){
+  //get Active sheet by URL
+  var sheet = SpreadsheetApp.openByUrl(sheet_url).getActiveSheet();
+  //get active sheet by name
+  var sheetname = SpreadsheetApp.openByUrl(sheet_url).getSheetByName(globalVariables().sheet_name);
+  Logger.log("sheetname",sheetname);
+  //check existence of sheetname. If sheet doesnt exist then save data into active sheet
+  if (sheetname != null)
+  {
+    sheet = sheetname;
+  }
+  //get sheet and first row as headers
+  //get whole sheet
+  var fullsheet = sheet.getDataRange().getValues();
+  //shift off row 1 for headers
+  var headers = fullsheet.shift();
+  Logger.log("headers",headers);
+  //parse json object 
+  var objets = JSON.parse(dataObject);
+  //create row data array
+  var rowData = [];
+  //insert timestamp in to forst comlum
+  rowData[0] = new Date();
+  Logger.log("INsert data timesptamp = ", rowData[0]);
+  // check json ketys
+  for (var key in objets)
+  {
+    for (i = 0; i< headers.length; i++)
+    { //comp key vs header
+      if (key.trim() === headers[i].trim())
+      {
+        rowData[i] = objets[key]; //insert in row
+        Logger.log("Insert data :", headers[i], " = ", objets[key]);
+      }
+    }
+  }
+  //write new row into sheet
+  var newRow = sheet.getLastRow() +1;
+  var newRange = sheet.getRange(newRow, 1, 1, rowData.length);
+  newRange.setValues([rowData]);
+  //return json data obj
+  return dataObject;
+}
+//
+//
+//
+// function stripQuotes(value){
+//   return value.replace(/^["']|['"]$g, "");
+// }
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
