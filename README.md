@@ -12,7 +12,7 @@ It also saves the array in the SD card (test.csv) via SPI.
 5. Undo step 3 and upload to Teensy, this will start the ESP in normal mode and code uploaded in step 4 will be executed
 
 # esp_HTTPS_POST_JSON
-This code receives the serail data sent by the Teensy, converts it to a json object row by row (4800 values in 80 rows of 60 values each ) and sends an HTTPS POST request to the following web server:
+This code receives the serail data sent by the Teensy, converts it to a json object row by row (4800 values in 80 rows of 60 values each ) and sends an HTTPS POST request to the following web server (script copy available in webserver.txt):
 
 https://script.google.com/home/projects/1niV1LXucPBpqVuCeT5znO4vxeuefeQiyRMsjxeojs_2zOYTCKim4Cw6y/edit
 
